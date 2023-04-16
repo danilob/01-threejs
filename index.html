@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/night.css">
+		
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="./monokai-sublime.css">
+		<style>
+		:root{
+			--r-link-color: #ED732F;
+		}
+
+			.controls-arrow, .progress {
+  color: #ED732F !important;
+}
+		</style>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section><h3>CENA BÁSICA<h3></section>
+				<section>
+					<ul>
+						<li>Faremos o Three.js executar de um jeito simples</li>
+						<li>Sem <em>bundler</em>, <em>modules</em> e dependências</li>
+						<li>Utilizando somente um arquivo javascript e um arquivo HTML</li>
+					</ul>
+				</section>
+				<section>
+					Crie um arquivo <code>index.html</code> incorporando no <code>body</code> as seguintes linhas:
+<pre><code data-line-numbers><canvas class="webgl"></canvas>
+<script src="./three.min.js"></script>
+<script src="./script.js"></script>
+				  </code></pre>
+				</section>
+				<section>
+				<ul>
+					<li>Vá ao site <a href="https://threejs.org/" target="__blank">https://threejs.org/</a></li>
+					<li>Clique no botão de download</li>
+					<li>Descompacte o arquivo</li>
+				</ul>
+				</section>
+				<section>
+				<ul>
+					<li>Vá na pasta <code>build/</code></li>
+					<li>Copie o arquivo <code>three.min.js</code> para pasta do seu projeto</li>
+				</ul>
+				</section>
+				<section>
+				<p>Agora vamos criar nossa cena utilizando o Three.js.</p>
+				<p>Nós precisaremos de 4 elementos para isso:</p>
+				<ul>
+					<li>Uma <em>scene</em> que irá conter alguns objetos</li>
+					<li>Alguns objetos</li>
+					<li>Uma câmera</li>
+					<li>Um renderizador</li>
+				</ul>
+				</section>
+				<section>
+				<h3>SCENE</h3>
+				<ul>
+					<li>Funciona como um container</li>
+					<li>Nós iremos adicionar objetos, modelos, fontes de iluminação, câmeras, etc</li>
+					<li>Em algum ponto nos iremos pedir ao Three.js que renderize a cena</li>
+				</ul>
+				</section>
+				<section>
+				<pre><code data-line-numbers>//Scene
+const scene = new THREE.Scene()
+				  </code></pre>
+				</section>
+				<section>
+				<h3>OBJETOS</h3>
+				<p>Pode ser várias coisas</p>
+				<ul>
+					<li>Geometrias primitivas</li>
+					<li>Modelos importados</li>
+					<li>Partículas</li>
+					<li>Luzes</li>
+					<li>Etc.</li>
+				</ul>
+				<p>Iniciaremos colocando um cubo vermelho</p>
+				</section>
+				<section>
+				<p>Precisaremos criar uma <a href="https://threejs.org/docs/#api/en/objects/Mesh" target="__blank">Mesh</a></p>
+				<p>Uma combinação de <em>geometry</em> e <em>material</em></p>
+				<p>Vamos iniciar com um <a href="https://threejs.org/docs/index.html#api/en/geometries/BoxGeometry" target="__blank">BoxGeometry</a> e <a href="https://threejs.org/docs/#api/en/materials/MeshBasicMaterial" target="__blank">MeshBasicMaterial</a></p>
+				</section>
+				<section>
+				<pre><code >//Object
+const geometry = new THREE.BoxGeometry(1, 1, 1)
+const material = new THREE.MeshBasicMaterial({ 
+		color: 0xff0000 
+	})
+const mesh = new THREE.Mesh(geometry, material)
+				  </code></pre>
+				</section>
+				<section>
+				<h3>GEOMETRY</h3>
+				<p>Na inicialização do <a href="https://threejs.org/docs/index.html#api/en/geometries/BoxGeometry" target="__blank">BoxGeometry</a> utilizaremos
+				três parametros que correspondem as dimensões da caixa.</p>
+				<pre><code >const geometry = new THREE.BoxGeometry(1, 1, 1)</code></pre>
+				</section>
+				<section>
+				<h3>MATERIAL</h3>
+				<p>Na inicialização do <a href="https://threejs.org/docs/#api/en/materials/MeshBasicMaterial" target="__blank">MeshBasicMaterial</a> podemos usar múltiplas
+				formas de expressar uma cor</p>
+				<ul>
+					<li><code>0xff0000</code></li>
+					<li><code>'#ff0000'</code></li>
+					<li><code>'red'</code></li>
+					<li>Classe <a href="https://threejs.org/docs/index.html#api/en/math/Color" target="__blank">Color</a></li>
+					
+				</ul>
+				</section>
+				<section>
+				<h3>MESH</h3>
+				<p>A malha é então formada com esses dois objetos: geometria e material</p>
+				<pre><code>mesh = new THREE.Mesh(geometry, material)</code></pre>
+				</section>
+				<section>
+				<p>Para adicionar o objeto na cena utilizaremos o método <code>add(...)</code></p>
+				<pre><code >scene.add(mesh)</code></pre>
+				</section>
+				<section>
+					<h3>CAMERA</h3>
+					<ul>
+						<li>Não é visível</li>
+						<li>Serve como um ponto de visão aplicado no renderizador</li>
+						<li>Podem haver múltiplas e se alternar entre elas</li>
+						<li>Iremos utilizar a <a href="https://threejs.org/docs/index.html#api/en/cameras/PerspectiveCamera" target="__blank">PerspectiveCamera</a> que possuem
+						dois parâmetros essenciais</li>
+					</ul>
+					<pre><code >const camera = new THREE.PerspectiveCamera(...)
+scene.add(camera)</code></pre>
+				</section>
+				<section>
+					<h3>FIELD OF VIEW</h3>
+					<p> Define o campo de visão da câmera expresso em graus, também pode ser chamado de <code>fov</code></p>
+					<pre><code >const camera = new THREE.PerspectiveCamera(75,...)</code></pre>
+				</section>
+				<section>
+					<h3>ASPECT RATIO</h3>
+					<p>Define a razão entre largura e altura da área de exibição da cena <code>width/height</code></p>
+					<pre><code>const sizes = {
+	width: 800,
+	height: 600
+}
+
+const camera = new THREE.PerspectiveCamera(
+		75, //fov
+		sizes.width/sizes.height //aspect ratio
+	)</code></pre>
+				</section>
+				<section>
+				<h3>RENDERER</h3>
+				<ul>
+					<li>Renderiza um cenário a partir do ponto de vista da câmera</li>
+					<li>O resultado é desenhado dentro do canvas</li>
+					<li>O canvas é um elemento HTML usado para desenhar coisas</li>
+					<li>O Three.js irá usar o WebGL para desenhar o render dentro do canvas</li>
+				</ul>
+				</section>
+				<section>
+				Crie um elemento <a href="https://threejs.org/docs/index.html#api/en/renderers/WebGLRenderer" target="__blank">WebGLRenderer</a> com os seguintes parâmetros
+				<pre><code>const canvas = document.querySelector('.webgl')
+
+const renderer = new THREE.WebGLRenderer({
+	canvas: canvas
+})
+
+renderer.setSize(sizes.width, sizes.height)
+
+renderer.render(scene, camera)</code></pre>
+				</section>
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+				minScale: 0.1,
+  				maxScale: 1.5,
+				viewDistance: 2,
+				//slideNumber: true,
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+			document.querySelector( '.reveal' ).style.width = '100vw';
+
+			// Make reveal.js aware of the size change
+			Reveal.layout();
+		</script>
+	</body>
+</html>
